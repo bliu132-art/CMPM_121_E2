@@ -53,7 +53,9 @@ function setCount(next: number): void {
   if (bounded === count) return;
   count = bounded;
   const state = snapshot(count);
-  drawMeter(state);
+  changes.dispatchEvent(
+    new CustomEvent<ShieldSnapshot>("change", { detail: state }),
+  );
   if (panel) updateStats(state);
 }
 
@@ -77,4 +79,10 @@ document.querySelector<HTMLButtonElement>("#counter-close")!.onclick = () => {
   panel.remove();
   panel = null;
 };
+const changes = new EventTarget();
+
+changes.addEventListener("change", (event) => {
+  drawMeter((event as CustomEvent<ShieldSnapshot>).detail);
+});
+
 drawMeter(snapshot(count));
