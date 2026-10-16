@@ -8,9 +8,7 @@ const readout = document.querySelector<HTMLParagraphElement>(
 let assignedProducers = 2;
 
 function updateAllocation() {
-  const production = assignedProducers * 3;
-  const consumption = 6;
-  const balance = production - consumption;
+  const { production, consumption, balance } = calculateSupplies();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawCrewAssignment();
   ctx.fillStyle = "#233e43";
@@ -40,6 +38,19 @@ document.querySelector<HTMLButtonElement>("#allocation-reset")!.onclick =
     updateAllocation();
   };
 updateAllocation();
+
+type SupplyResult = {
+  production: number;
+  consumption: number;
+  balance: number;
+};
+
+function calculateSupplies(): SupplyResult {
+  const production = assignedProducers * 3;
+  const consumption = 6;
+  const balance = production - consumption;
+  return { production, consumption, balance };
+}
 
 function updateReport(
   production: number,
