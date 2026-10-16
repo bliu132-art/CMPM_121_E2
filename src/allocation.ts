@@ -9,18 +9,23 @@ let assignedProducers = 2;
 
 function updateAllocation() {
   const { production, consumption, balance } = calculateSupplies();
+  const rows: BarRow[] = [
+    { label: "Production", value: production, color: "#27766b" },
+    { label: "Consumption", value: consumption, color: "#a44d23" },
+  ];
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawCrewAssignment();
   ctx.fillStyle = "#233e43";
   ctx.font = "14px system-ui";
   ctx.fillText(`Producers: ${assignedProducers} / 6`, 18, 76);
-  ctx.fillText(`Production: ${production}`, 18, 102);
-  ctx.fillStyle = "#27766b";
-  ctx.fillRect(18, 110, production * 14, 20);
-  ctx.fillStyle = "#233e43";
-  ctx.fillText(`Consumption: ${consumption}`, 18, 154);
-  ctx.fillStyle = "#a44d23";
-  ctx.fillRect(18, 162, consumption * 14, 20);
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const y = 102 + i * 52;
+    ctx.fillStyle = "#233e43";
+    ctx.fillText(`${row.label}: ${row.value}`, 18, y);
+    ctx.fillStyle = row.color;
+    ctx.fillRect(18, y + 8, row.value * 14, 20);
+  }
   updateReport(production, consumption, balance);
 }
 
@@ -38,6 +43,12 @@ document.querySelector<HTMLButtonElement>("#allocation-reset")!.onclick =
     updateAllocation();
   };
 updateAllocation();
+
+type BarRow = {
+  label: string;
+  value: number;
+  color: string;
+};
 
 type SupplyResult = {
   production: number;
