@@ -70,16 +70,59 @@ function runCommand(command: Command): void {
   command.execute();
 }
 
+const queue: Command[] = [];
+const list = document.querySelector<HTMLOListElement>("#rover-pending")!;
+const status = document.querySelector<HTMLElement>("#rover-queue-status")!;
+const run = document.querySelector<HTMLButtonElement>("#rover-run")!;
+const clear = document.querySelector<HTMLButtonElement>("#rover-clear")!;
+
+run.disabled = false;
+clear.disabled = false;
+
+function showQueue(): void {
+  list.replaceChildren();
+  for (const command of queue) {
+    const item = document.createElement("li");
+    item.textContent = command.label;
+    list.append(item);
+  }
+  status.textContent = queue.length === 0 ? "Empty" : `${queue.length} pending`;
+}
+
+function enqueue(command: Command): void {
+  queue.push(command);
+  showQueue();
+}
+
 document.querySelector<HTMLButtonElement>("#rover-forward")!.onclick = () => {
-  runCommand(forwardCommand);
+  enqueue(forwardCommand);
 };
+
 document.querySelector<HTMLButtonElement>("#rover-right")!.onclick = () => {
-  runCommand(rightCommand);
+  enqueue(rightCommand);
 };
+
+run.onclick = () => {
+  for (const command of queue) {
+    runCommand(command);
+  }
+  queue.length = 0;
+  showQueue();
+};
+
+clear.onclick = () => {
+  queue.length = 0;
+  showQueue();
+};
+
 document.querySelector<HTMLButtonElement>("#rover-reset")!.onclick = () => {
   x = 2;
   y = 2;
   direction = 0;
+  queue.length = 0;
   drawRover();
+  showQueue();
 };
+
 drawRover();
+showQueue();
